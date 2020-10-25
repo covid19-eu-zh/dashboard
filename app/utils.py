@@ -6,6 +6,18 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 @st.cache
+def get_countries():
+    api_uri = "https://covid19-eu-data-api-gamma.now.sh/api/countryLookup"
+    data = requests.get(api_uri).json()
+    countries = data["countries"]
+    countries = [list(i.keys()) for i in countries]
+    countries = sum(countries, [])
+
+    countries = [i for i in countries if (len(i)==2) and (i != "uk")]
+
+    return countries
+
+@st.cache
 def get_data(country_code, days):
 
     api_uri = f"https://covid19-eu-data-api-gamma.now.sh/api/countries?alpha2={country_code}&days={days+1}"
@@ -50,13 +62,13 @@ def forge_country_data(df, region_key=None):
 
         shifted_cols = [
             "previous_cases",
-            "previous_deaths",
+            # "previous_deaths",
             # "previous_cases_per_100k"
         ]
         df_nut_shifted = df_nut.shift(periods=1).rename(
             columns={
                 "cases": "previous_cases",
-                "deaths": "previous_deaths",
+                # "deaths": "previous_deaths",
                 # "cases_per_100k": "previous_cases_per_100k"
             }
         ).copy()
@@ -76,11 +88,11 @@ def forge_country_data(df, region_key=None):
         df_full,
         df_full.groupby(
             full_merge_cols
-        )["new_cases", "cases", "deaths"].sum().reset_index().rename(
+        )["new_cases", "cases"].sum().reset_index().rename(
             columns={
                 "new_cases": "country_new_cases",
                 "cases": "country_cases",
-                "deaths": "country_deaths"
+                # "deaths": "country_deaths"
             }
         ),
         how="left", on=full_merge_cols

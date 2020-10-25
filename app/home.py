@@ -3,21 +3,40 @@ from utils import forge_country_data as _forge_country_data
 from utils import create_dataframe as _create_dataframe
 from utils import get_data as _get_data
 from utils import create_case_fig as _create_case_fig
+from utils import get_countries as _get_countries
 
 country_code = "de"
 days = 5
 
-country_codes = ["DE", "AT", "NL"]
+# Calculate country codes
+avaibale_countries = _get_countries()
+country_codes = [i.upper() for i in avaibale_countries]
+
+# Adjust sidebar
+
+st.sidebar.markdown("## COVID-19 Cases in EU")
 
 country_code = st.sidebar.selectbox(
     label="Select Country", options=country_codes
 ).lower()
+available_days = list(range(1, 30))
 
 days = st.sidebar.selectbox(
-    label="Days", options=range(6, 15), index=5
+    label="Days", options=available_days, index=13
 )
 
 
+st.sidebar.markdown(
+    "## About"
+    "\n"
+    "- Raw data source: [covid19-eu-zh/covid19-eu-data](https://github.com/covid19-eu-zh/covid19-eu-data)"
+    "\n"
+    "- Data API: [covid19-eu-zh/covid19-eu-data-api](https://github.com/covid19-eu-zh/covid19-eu-data-api)"
+    "\n"
+    "- [source code](https://github.com/covid19-eu-zh/dashboard)"
+)
+
+# Get data
 data = _get_data(country_code, days)
 df = _create_dataframe(data)
 df_full, regions, region_key = _forge_country_data(df)
@@ -27,7 +46,7 @@ df_full, regions, region_key = _forge_country_data(df)
 
 
 
-def main(dataframe):
+def main(df_full):
 
     selected_region = "total"
     selected_region = st.selectbox(label="Regions", options=["total"]+regions )
@@ -43,7 +62,10 @@ def main(dataframe):
     if selected_region == "total":
         st.markdown(f"Data for the whole country")
         df_selected = df_full[
-            ["country", "date", "country_new_cases", "country_cases", "country_deaths"]
+            [
+                "country", "date", "country_new_cases", "country_cases",
+                # "country_deaths"
+            ]
         ].drop_duplicates()
 
         total_left_axis = {
