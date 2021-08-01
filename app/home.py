@@ -52,11 +52,11 @@ st.sidebar.markdown(
 # Get data
 data = _get_data(country_code, days)
 df = _create_dataframe(data)
-st.write(df)
+# st.write(df)
 df_full, regions, region_key = _forge_country_data(df)
-st.write(df_full)
-st.write(regions)
-st.write(region_key)
+# st.write(df_full)
+# st.write(regions)
+# st.write(region_key)
 
 # st.write(df_full)
 # st.write(regions)
@@ -69,7 +69,7 @@ def main(df_full):
     selected_region = st.selectbox(label="Regions", options=["total"]+regions )
     preview_columns = [
         "country", "date", "new_cases",
-        "cases", "deaths"
+        "cases", # "deaths"
     ]
     if "cases_per_100k" in df_full:
         preview_columns = preview_columns + ["cases_per_100k"]

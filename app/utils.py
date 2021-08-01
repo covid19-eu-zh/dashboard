@@ -52,13 +52,14 @@ def forge_country_data(df, region_key=None):
     all_cols = df.columns
     region_cols = [i for i in all_cols if i.startswith("nuts_") or i.startswith("lau")]
     if region_key is None:
-        region_key = region_cols
-    st.write(f"region_cols: {region_cols}")
+        for i in ("nuts_1", "nuts_2", "nuts_3", "lau"):
+            if i in region_cols:
+                region_key = i
+        if region_key is None:
+            st.warning(f"Can not find the correct NUTS key from columns: {region_cols}")
+    # st.write(f"region_cols: {region_cols}")
 
-    regions = {}
-    for col in region_cols:
-        regions[col] = list(df[col].unique())
-
+    regions = list(df[region_key].unique())
     df_full = pd.DataFrame()
     for nut in regions:
         df_nut = df.loc[df[region_key] == nut].reset_index(drop=True)
