@@ -46,14 +46,19 @@ def create_dataframe(data):
 
     return df
 
+
 @st.cache
 def forge_country_data(df, region_key=None):
     all_cols = df.columns
     region_cols = [i for i in all_cols if i.startswith("nuts_") or i.startswith("lau")]
     if region_key is None:
-        region_key = region_cols[0]
+        region_key = region_cols
+    st.write(f"region_cols: {region_cols}")
 
-    regions = list(df[region_key].unique())
+    regions = {}
+    for col in region_cols:
+        regions[col] = list(df[col].unique())
+
     df_full = pd.DataFrame()
     for nut in regions:
         df_nut = df.loc[df[region_key] == nut].reset_index(drop=True)
@@ -140,6 +145,7 @@ def create_case_fig(df_selected, title, left_axis=None, right_axis=None):
 
     fig.update_layout(
         legend=dict(
+            orientation="h",
             yanchor="top",
             y=-0.2,
             xanchor="center",
@@ -153,7 +159,7 @@ def create_case_fig(df_selected, title, left_axis=None, right_axis=None):
         ),
         yaxis2=dict(
             title={
-                "text": left_axis.get("label")
+                "text": right_axis.get("label")
             },
             rangemode="tozero"
         ),
@@ -165,6 +171,33 @@ def create_case_fig(df_selected, title, left_axis=None, right_axis=None):
             family="Courier New, monospace",
             size=18,
             color="#7f7f7f"
+        ),
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=1,
+                        label="1m",
+                        step="month",
+                        stepmode="backward"),
+                    dict(count=6,
+                        label="6m",
+                        step="month",
+                        stepmode="backward"),
+                    dict(count=1,
+                        label="YTD",
+                        step="year",
+                        stepmode="todate"),
+                    dict(count=1,
+                        label="1y",
+                        step="year",
+                        stepmode="backward"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="date"
         )
     )
 

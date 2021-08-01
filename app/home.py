@@ -5,7 +5,18 @@ from utils import get_data as _get_data
 from utils import create_case_fig as _create_case_fig
 from utils import get_countries as _get_countries
 
-country_code = "de"
+
+# Config the whole app
+st.set_page_config(
+    page_title="A Dashboard Template",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+#
+
+country_code = "DE"
 days = 5
 
 # Calculate country codes
@@ -17,18 +28,20 @@ country_codes = [i.upper() for i in avaibale_countries]
 st.sidebar.markdown("## COVID-19 Cases in EU")
 
 country_code = st.sidebar.selectbox(
-    label="Select Country", options=country_codes
+    label="Select Country", options=country_codes,
+    index=country_codes.index(country_code)
 ).lower()
-available_days = list(range(1, 30))
+available_days = list(range(1, 2*365))
 
 days = st.sidebar.selectbox(
-    label="Days", options=available_days, index=13
+    label="Days", options=available_days, index=365
 )
 
 
 st.sidebar.markdown(
     "## About"
     "\n"
+    "This is a simple dashboard to show the data we are collecting. \n"
     "- Raw data source: [covid19-eu-zh/covid19-eu-data](https://github.com/covid19-eu-zh/covid19-eu-data)"
     "\n"
     "- Data API: [covid19-eu-zh/covid19-eu-data-api](https://github.com/covid19-eu-zh/covid19-eu-data-api)"
@@ -39,7 +52,11 @@ st.sidebar.markdown(
 # Get data
 data = _get_data(country_code, days)
 df = _create_dataframe(data)
+st.write(df)
 df_full, regions, region_key = _forge_country_data(df)
+st.write(df_full)
+st.write(regions)
+st.write(region_key)
 
 # st.write(df_full)
 # st.write(regions)
@@ -75,8 +92,8 @@ def main(df_full):
         }
         total_right_axis = {
             "column": "country_cases",
-            "name": "New Cases",
-            "label": "New Cases"
+            "name": "Total Cases",
+            "label": "Total Cases"
         }
 
         fig = _create_case_fig(
