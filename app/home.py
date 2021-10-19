@@ -8,7 +8,7 @@ from utils import get_countries as _get_countries
 
 # Config the whole app
 st.set_page_config(
-    page_title="A Dashboard Template",
+    page_title="covid-19-eu-data",
     page_icon="🧊",
     layout="wide",
     initial_sidebar_state="expanded",
